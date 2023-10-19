@@ -8,6 +8,7 @@ import time
 url = "https://powerapi.tsinghua.tw/n1";
 status = -1
 i = 0
+pre_value = -1
 while(1):
   response = requests.get(url);
   data = response.json();
@@ -25,6 +26,13 @@ while(1):
   if (data['value'] > 6900):
     status = 4
   print(status, pre_status)
+  if ((status == 2 or status == 3 or status == 4) and pre_value != data['value']):
+    headers = {
+      "Authorization": "Bearer " + "mVO97RfsTkgQHmbgC2jcS2NznBbeo5825HgNu2RKChR",
+      "Content-Type": "application/x-www-form-urlencoded"
+    }
+    params = {"message": f"\n{data['value']} kW時間:\n {data['time']}"}
+    requests.post("https://notify-api.line.me/api/notify", headers=headers, params=params)
   if (status == 0 and pre_status != 0):
     headers = {
       "Authorization": "Bearer " + "mVO97RfsTkgQHmbgC2jcS2NznBbeo5825HgNu2RKChR",
@@ -60,4 +68,5 @@ while(1):
       }
       params = {"message": f"\n超過6900 kW\n資料提取時間:\n {data['time']}\n瓦數:\n{data['value']} kW"}
       requests.post("https://notify-api.line.me/api/notify", headers=headers, params=params)
+  pre_value = data['value']
   time.sleep(60)
