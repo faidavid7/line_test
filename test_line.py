@@ -14,6 +14,15 @@ while(1):
   data = response.json();
   print("Current time:", data['time'], " ", "Current Load:", data['value'], "kW");
   
+  # send time and power
+  headers = {
+    "Authorization": "Bearer " + "mVO97RfsTkgQHmbgC2jcS2NznBbeo5825HgNu2RKChR",
+    "Content-Type": "application/x-www-form-urlencoded"
+  }
+  params = {"message": f"\n{data['value']} kW時間:\n {data['time']}"}
+  requests.post("https://notify-api.line.me/api/notify", headers=headers, params=params)
+
+  
   pre_status = status
   if(data['value'] < 6700):
     status = 0
